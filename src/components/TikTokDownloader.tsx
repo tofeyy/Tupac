@@ -18,6 +18,58 @@ const TikTokDownloader: React.FC = () => {
     return tiktokRegex.test(url);
   };
 
+  // قائمة APIs احتياطية
+  const apiUrls = [
+    'https://api.tiklydown.eu.org/api/download?url=',
+    'https://api.tiktokv.com/aweme/v1/feed/?url=',
+    'https://tofey.serv00.net/tiktok?url=',
+    'https://www.tikwm.com/api/?url=',
+    'https://tikdown.org/api?url='
+  ];
+
+  const tryDownloadWithApi = async (apiUrl: string, videoUrl: string) => {
+    console.log(`جاري تجربة API: ${apiUrl}${encodeURIComponent(videoUrl)}`);
+    
+    try {
+      const response = await fetch(`${apiUrl}${encodeURIComponent(videoUrl)}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(`استجابة API (${apiUrl}):`, data);
+
+      // تحليل الاستجابة حسب نوع API
+      if (data.video || data.data?.play || data.aweme_list?.[0]?.video?.play_addr?.url_list?.[0]) {
+        const videoLink = data.video || 
+                         data.data?.play || 
+                         data.aweme_list?.[0]?.video?.play_addr?.url_list?.[0] ||
+                         data.data?.video_no_watermark ||
+                         data.video_no_watermark;
+        
+        if (videoLink) {
+          return {
+            video: videoLink,
+            title: data.title || data.data?.title || data.aweme_list?.[0]?.desc || '',
+            thumbnail: data.thumbnail || data.data?.cover || data.aweme_list?.[0]?.video?.cover?.url_list?.[0] || ''
+          };
+        }
+      }
+      
+      throw new Error('لم يتم العثور على رابط الفيديو في الاستجابة');
+    } catch (error) {
+      console.error(`فشل API ${apiUrl}:`, error);
+      throw error;
+    }
+  };
+
   const handlePreview = async () => {
     if (!url.trim()) {
       toast({
@@ -41,46 +93,39 @@ const TikTokDownloader: React.FC = () => {
     setVideoData(null);
     setError('');
 
-    try {
-      console.log('جاري جلب الفيديو من:', url);
-      
-      const apiUrl = `https://tofey.serv00.net/tiktok?url=${encodeURIComponent(url)}`;
-      console.log('جاري تجربة API:', apiUrl);
-      
-      const response = await fetch(apiUrl);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    console.log('جاري جلب الفيديو من:', url);
+
+    // محاولة استخدام APIs متعددة
+    for (let i = 0; i < apiUrls.length; i++) {
+      try {
+        console.log(`محاولة ${i + 1}/${apiUrls.length}: ${apiUrls[i]}`);
+        const result = await tryDownloadWithApi(apiUrls[i], url);
+        
+        if (result && result.video) {
+          setVideoData(result);
+          toast({
+            title: "تم بنجاح فاخر ✨",
+            description: "تم جلب الفيديو بأناقة وفخامة",
+          });
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.error(`فشل API ${i + 1}:`, error);
+        // استمر في المحاولة مع API التالي
+        if (i === apiUrls.length - 1) {
+          // إذا فشلت جميع APIs
+          setError('فشل في جلب الفيديو من جميع المصادر. تأكد من صحة الرابط أو جرب مرة أخرى لاحقاً');
+          toast({
+            title: "خطأ مؤسف",
+            description: "فشل في جلب الفيديو من جميع المصادر المتاحة",
+            variant: "destructive",
+          });
+        }
       }
-
-      const data = await response.json();
-      console.log('استجابة API:', data);
-
-      if (data.video) {
-        setVideoData({
-          video: data.video,
-          title: data.title || '',
-          thumbnail: data.thumbnail || ''
-        });
-        toast({
-          title: "تم بنجاح فاخر ✨",
-          description: "تم جلب الفيديو بأناقة وفخامة",
-        });
-      } else {
-        throw new Error('لم يتم العثور على رابط الفيديو في الاستجابة');
-      }
-
-    } catch (error) {
-      console.error('خطأ في جلب الفيديو:', error);
-      setError('فشل في جلب الفيديو. تأكد من صحة الرابط أو جرب مرة أخرى لاحقاً');
-      toast({
-        title: "خطأ مؤسف",
-        description: "فشل في جلب الفيديو. تأكد من صحة الرابط",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   const handleDownload = async () => {
@@ -90,19 +135,36 @@ const TikTokDownloader: React.FC = () => {
     try {
       console.log('جاري تحميل الفيديو من:', videoData.video);
       
-      const link = document.createElement('a');
-      link.href = videoData.video;
-      link.download = `tiktok-video-${Date.now()}.mp4`;
-      link.target = '_blank';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      toast({
-        title: "تحميل فاخر ✨",
-        description: "تم بدء تحميل الفيديو بأناقة",
-      });
+      // محاولة التحميل المباشر
+      try {
+        const response = await fetch(videoData.video);
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = `tiktok-video-${Date.now()}.mp4`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.URL.revokeObjectURL(downloadUrl);
+        
+        toast({
+          title: "تحميل فاخر ✨",
+          description: "تم تحميل الفيديو بنجاح",
+        });
+      } catch (downloadError) {
+        // إذا فشل التحميل المباشر، افتح الرابط في نافذة جديدة
+        console.log('فشل التحميل المباشر، فتح الرابط في نافذة جديدة');
+        window.open(videoData.video, '_blank');
+        
+        toast({
+          title: "تم فتح الفيديو",
+          description: "تم فتح الفيديو في نافذة جديدة للتحميل اليدوي",
+        });
+      }
       
     } catch (error) {
       console.error('خطأ في التحميل:', error);
@@ -192,6 +254,10 @@ const TikTokDownloader: React.FC = () => {
                 <p className="flex items-center gap-2">
                   <span className="w-2 h-2 bg-pink-500 rounded-full"></span>
                   تأكد من أن الفيديو متاح للعامة
+                </p>
+                <p className="flex items-center gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  النظام يجرب عدة مصادر لضمان أفضل خدمة
                 </p>
               </div>
             </Card>
