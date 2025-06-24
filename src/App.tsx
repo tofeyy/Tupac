@@ -24,10 +24,14 @@ const queryClient = new QueryClient();
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   
+  console.log('ProtectedRoute: التحقق من المستخدم:', user);
+  
   if (!user?.isAdmin) {
+    console.log('ProtectedRoute: المستخدم ليس أدمن، إعادة توجيه للصفحة الرئيسية');
     return <Navigate to="/" replace />;
   }
   
+  console.log('ProtectedRoute: المستخدم أدمن، السماح بالوصول');
   return <>{children}</>;
 };
 
@@ -37,7 +41,10 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const { menuItems } = useSite();
 
+  console.log('المسار الحالي:', location.pathname);
+
   const handleNavigate = (path: string) => {
+    console.log('الانتقال إلى:', path);
     window.location.pathname = path;
   };
 
