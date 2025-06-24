@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useSite } from '@/contexts/SiteContext';
 import { toast } from '@/hooks/use-toast';
 import { Plus, Trash2, Settings } from 'lucide-react';
+import ImageUploader from '@/components/ImageUploader';
 
 const Admin = () => {
   const { 
@@ -221,15 +222,11 @@ const Admin = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="tutorialThumbnail">رابط الصورة المصغرة</Label>
-                <Input
-                  id="tutorialThumbnail"
-                  value={newTutorial.thumbnail}
-                  onChange={(e) => setNewTutorial({ ...newTutorial, thumbnail: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
+              <ImageUploader
+                label="الصورة المصغرة"
+                currentImage={newTutorial.thumbnail}
+                onImageSelect={(imageUrl) => setNewTutorial({ ...newTutorial, thumbnail: imageUrl })}
+              />
 
               <div>
                 <Label htmlFor="youtubeUrl">رابط يوتيوب</Label>
@@ -287,15 +284,11 @@ const Admin = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="websiteImage">رابط الصورة</Label>
-                <Input
-                  id="websiteImage"
-                  value={newWebsite.image}
-                  onChange={(e) => setNewWebsite({ ...newWebsite, image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
+              <ImageUploader
+                label="صورة الموقع"
+                currentImage={newWebsite.image}
+                onImageSelect={(imageUrl) => setNewWebsite({ ...newWebsite, image: imageUrl })}
+              />
 
               <Button onClick={handleAddWebsite} className="w-full">
                 إضافة الموقع
@@ -343,15 +336,11 @@ const Admin = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="appIcon">رابط الأيقونة</Label>
-                <Input
-                  id="appIcon"
-                  value={newApp.icon}
-                  onChange={(e) => setNewApp({ ...newApp, icon: e.target.value })}
-                  placeholder="https://example.com/icon.png"
-                />
-              </div>
+              <ImageUploader
+                label="أيقونة التطبيق"
+                currentImage={newApp.icon}
+                onImageSelect={(imageUrl) => setNewApp({ ...newApp, icon: imageUrl })}
+              />
 
               <Button onClick={handleAddApp} className="w-full">
                 إضافة التطبيق
