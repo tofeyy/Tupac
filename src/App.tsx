@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -39,13 +38,14 @@ const AppContent: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { menuItems } = useSite();
 
   console.log('المسار الحالي:', location.pathname);
 
   const handleNavigate = (path: string) => {
     console.log('الانتقال إلى:', path);
-    window.location.pathname = path;
+    navigate(path);
   };
 
   const getDownloaderTitle = (type: string) => {
