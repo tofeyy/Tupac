@@ -3,53 +3,80 @@ import React from 'react';
 import TikTokDownloader from '@/components/TikTokDownloader';
 import { useSite } from '@/contexts/SiteContext';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Sparkles, Crown, Diamond, Star, Zap, Shield, Rocket } from 'lucide-react';
 
 const Index = () => {
   const { getPageContent } = useSite();
   const pageContent = getPageContent('home');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-pink-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-gradient-to-r from-emerald-400/20 to-blue-400/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12 relative z-10">
         {/* Header Section */}
-        <div className="text-center mb-8 animate-fade-in">
+        <div className="text-center mb-16 animate-fade-in">
           {pageContent?.image && (
-            <div className="mb-6">
-              <img
-                src={pageContent.image}
-                alt={pageContent.title}
-                className="w-32 h-32 mx-auto rounded-full shadow-lg object-cover"
-              />
+            <div className="mb-8">
+              <div className="relative inline-block">
+                <img
+                  src={pageContent.image}
+                  alt={pageContent.title}
+                  className="w-40 h-40 mx-auto rounded-3xl shadow-2xl object-cover border-4 border-white/50"
+                />
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-pulse">
+                  <Crown className="w-4 h-4 text-white" />
+                </div>
+              </div>
             </div>
           )}
           
-          <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-4">
-            {pageContent?.title || 'أداة تحميل فيديوهات تيك توك'}
-          </h1>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-            {pageContent?.subtitle || 'قم بتحميل فيديوهات تيك توك المفضلة لديك بجودة عالية وبشكل مجاني'}
+          <div className="relative">
+            <h1 className="text-5xl md:text-7xl font-bold font-playfair text-shimmer mb-6 leading-tight">
+              {pageContent?.title || 'توباك الفاخر'}
+            </h1>
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+              <Sparkles className="w-8 h-8 text-yellow-400 animate-pulse" />
+            </div>
+          </div>
+          
+          <p className="text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto mb-8 font-medium leading-relaxed">
+            {pageContent?.subtitle || 'تجربة تحميل فيديوهات تيك توك بتصميم فاخر وأنيق'}
           </p>
           
           {pageContent?.description && (
-            <p className="text-md text-gray-600 max-w-xl mx-auto mt-4">
-              {pageContent.description}
-            </p>
+            <div className="max-w-2xl mx-auto mb-8">
+              <Card className="luxury-card p-8 text-center">
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  {pageContent.description}
+                </p>
+              </Card>
+            </div>
           )}
 
           {pageContent?.content && (
-            <div className="mt-6 p-4 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
-              <p className="text-gray-700 whitespace-pre-wrap">
-                {pageContent.content}
-              </p>
+            <div className="mt-8">
+              <Card className="luxury-card p-8 max-w-3xl mx-auto">
+                <p className="text-gray-700 whitespace-pre-wrap text-lg leading-relaxed">
+                  {pageContent.content}
+                </p>
+              </Card>
             </div>
           )}
 
           {pageContent?.ctaText && pageContent?.ctaUrl && (
-            <div className="mt-6">
+            <div className="mt-8">
               <Button
                 onClick={() => window.open(pageContent.ctaUrl, '_blank')}
-                className="gradient-bg text-white hover:opacity-90"
+                className="luxury-gradient text-white hover:shadow-2xl transition-all duration-300 px-12 py-6 text-xl font-bold rounded-2xl"
               >
+                <Rocket className="w-6 h-6 ml-3" />
                 {pageContent.ctaText}
               </Button>
             </div>
@@ -57,34 +84,58 @@ const Index = () => {
         </div>
 
         {/* TikTok Downloader Section */}
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto mb-20">
           <TikTokDownloader />
         </div>
 
         {/* Features Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mt-12 max-w-6xl mx-auto">
-          <div className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">🎯</span>
+        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <Card className="luxury-card p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group animate-scale-in floating-animation">
+            <div className="w-20 h-20 luxury-gradient rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+              <Diamond className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-center">دقة عالية</h3>
-            <p className="text-gray-600 text-center">تحميل بأعلى جودة متاحة</p>
-          </div>
+            <h3 className="text-2xl font-bold font-playfair mb-4 text-gray-800">جودة فائقة</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">تحميل بأعلى جودة متاحة مع تقنيات متطورة</p>
+            <div className="mt-4 flex justify-center space-x-1 space-x-reverse">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+              ))}
+            </div>
+          </Card>
           
-          <div className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">⚡</span>
+          <Card className="luxury-card p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group animate-scale-in floating-animation" style={{ animationDelay: '200ms' }}>
+            <div className="w-20 h-20 luxury-gradient-2 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+              <Zap className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-center">سرعة فائقة</h3>
-            <p className="text-gray-600 text-center">تحميل سريع وموثوق</p>
-          </div>
+            <h3 className="text-2xl font-bold font-playfair mb-4 text-gray-800">سرعة البرق</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">تحميل فوري وسريع بتقنيات حديثة</p>
+            <div className="mt-4 flex justify-center space-x-1 space-x-reverse">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+              ))}
+            </div>
+          </Card>
           
-          <div className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">🔒</span>
+          <Card className="luxury-card p-8 text-center hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group animate-scale-in floating-animation" style={{ animationDelay: '400ms' }}>
+            <div className="w-20 h-20 luxury-gradient-3 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+              <Shield className="w-10 h-10 text-white" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-center">آمان تام</h3>
-            <p className="text-gray-600 text-center">حماية كاملة لخصوصيتك</p>
+            <h3 className="text-2xl font-bold font-playfair mb-4 text-gray-800">أمان كامل</h3>
+            <p className="text-gray-600 text-lg leading-relaxed">حماية متقدمة وخصوصية تامة لبياناتك</p>
+            <div className="mt-4 flex justify-center space-x-1 space-x-reverse">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+              ))}
+            </div>
+          </Card>
+        </div>
+
+        {/* Bottom decoration */}
+        <div className="text-center mt-20">
+          <div className="inline-flex items-center space-x-2 space-x-reverse text-gray-500">
+            <Crown className="w-5 h-5" />
+            <span className="font-medium">منصة التحميل الفاخرة</span>
+            <Crown className="w-5 h-5" />
           </div>
         </div>
       </div>
