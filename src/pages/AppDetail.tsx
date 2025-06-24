@@ -10,6 +10,7 @@ import { toast } from '@/hooks/use-toast';
 const AppDetail = () => {
   const { appId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const { apps } = useSite();
   const [countdown, setCountdown] = useState(15);
   const [showDownload, setShowDownload] = useState(false);
