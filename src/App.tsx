@@ -12,6 +12,7 @@ import Sidebar from '@/components/Sidebar';
 import LoginModal from '@/components/LoginModal';
 import GenericDownloader from '@/components/GenericDownloader';
 import Index from "@/pages/Index";
+import About from "@/pages/About";
 import Admin from "@/pages/Admin";
 import Tutorials from "@/pages/Tutorials";
 import Websites from "@/pages/Websites";
