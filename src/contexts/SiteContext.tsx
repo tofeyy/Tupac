@@ -107,11 +107,41 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedApps = localStorage.getItem('tupac_apps');
     const savedPageContents = localStorage.getItem('tupac_page_contents');
 
-    if (savedMenuItems) setMenuItems(JSON.parse(savedMenuItems));
-    if (savedTutorials) setTutorials(JSON.parse(savedTutorials));
-    if (savedWebsites) setWebsites(JSON.parse(savedWebsites));
-    if (savedApps) setApps(JSON.parse(savedApps));
-    if (savedPageContents) setPageContents(JSON.parse(savedPageContents));
+    if (savedMenuItems) {
+      try {
+        setMenuItems(JSON.parse(savedMenuItems));
+      } catch (e) {
+        console.error('Error parsing menu items:', e);
+      }
+    }
+    if (savedTutorials) {
+      try {
+        setTutorials(JSON.parse(savedTutorials));
+      } catch (e) {
+        console.error('Error parsing tutorials:', e);
+      }
+    }
+    if (savedWebsites) {
+      try {
+        setWebsites(JSON.parse(savedWebsites));
+      } catch (e) {
+        console.error('Error parsing websites:', e);
+      }
+    }
+    if (savedApps) {
+      try {
+        setApps(JSON.parse(savedApps));
+      } catch (e) {
+        console.error('Error parsing apps:', e);
+      }
+    }
+    if (savedPageContents) {
+      try {
+        setPageContents(JSON.parse(savedPageContents));
+      } catch (e) {
+        console.error('Error parsing page contents:', e);
+      }
+    }
   }, []);
 
   const addMenuItem = (item: Omit<MenuItem, 'id'>) => {
@@ -199,15 +229,31 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updatePageContent = (pageKey: string, content: Omit<PageContent, 'id' | 'pageKey'>) => {
+    console.log('Updating page content for:', pageKey, content);
     const updatedContents = pageContents.map(page => 
       page.pageKey === pageKey ? { ...content, id: page.id, pageKey } : page
     );
+    
+    // If page doesn't exist, create it
+    const pageExists = pageContents.some(page => page.pageKey === pageKey);
+    if (!pageExists) {
+      const newPage = {
+        id: Date.now().toString(),
+        pageKey,
+        ...content
+      };
+      updatedContents.push(newPage);
+    }
+    
     setPageContents(updatedContents);
     localStorage.setItem('tupac_page_contents', JSON.stringify(updatedContents));
+    console.log('Page content updated successfully');
   };
 
   const getPageContent = (pageKey: string) => {
-    return pageContents.find(page => page.pageKey === pageKey);
+    const content = pageContents.find(page => page.pageKey === pageKey);
+    console.log('Getting page content for:', pageKey, content);
+    return content;
   };
 
   const value = {

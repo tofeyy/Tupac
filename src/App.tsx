@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
@@ -34,19 +35,9 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
-const AppContent: React.FC = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
+const AppRoutes: React.FC = () => {
   const { menuItems } = useSite();
-
-  console.log('المسار الحالي:', location.pathname);
-
-  const handleNavigate = (path: string) => {
-    console.log('الانتقال إلى:', path);
-    navigate(path);
-  };
+  const location = useLocation();
 
   const getDownloaderTitle = (type: string) => {
     switch (type) {
@@ -64,6 +55,55 @@ const AppContent: React.FC = () => {
       case 'pinterest': return 'الصق رابط بنترست هنا...';
       default: return 'الصق الرابط هنا...';
     }
+  };
+
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/tutorials" element={<Tutorials />} />
+      <Route path="/websites" element={<Websites />} />
+      <Route path="/apps" element={<Apps />} />
+      <Route 
+        path="/admin" 
+        element={
+          <ProtectedRoute>
+            <Admin />
+          </ProtectedRoute>
+        } 
+      />
+      {menuItems
+        .filter(item => ['instagram', 'twitter', 'pinterest'].includes(item.type))
+        .map(item => (
+          <Route
+            key={item.id}
+            path={`/downloader/${item.type}`}
+            element={
+              <GenericDownloader
+                title={getDownloaderTitle(item.type)}
+                apiUrl={item.apiUrl || ''}
+                placeholder={getDownloaderPlaceholder(item.type)}
+              />
+            }
+          />
+        ))
+      }
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+const AppContent: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  console.log('المسار الحالي:', location.pathname);
+
+  const handleNavigate = (path: string) => {
+    console.log('الانتقال إلى:', path);
+    navigate(path);
   };
 
   return (
@@ -95,38 +135,7 @@ const AppContent: React.FC = () => {
         </div>
 
         <main className="flex-1 min-h-screen">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/tutorials" element={<Tutorials />} />
-            <Route path="/websites" element={<Websites />} />
-            <Route path="/apps" element={<Apps />} />
-            <Route 
-              path="/admin" 
-              element={
-                <ProtectedRoute>
-                  <Admin />
-                </ProtectedRoute>
-              } 
-            />
-            {menuItems
-              .filter(item => ['instagram', 'twitter', 'pinterest'].includes(item.type))
-              .map(item => (
-                <Route
-                  key={item.id}
-                  path={`/downloader/${item.type}`}
-                  element={
-                    <GenericDownloader
-                      title={getDownloaderTitle(item.type)}
-                      apiUrl={item.apiUrl || ''}
-                      placeholder={getDownloaderPlaceholder(item.type)}
-                    />
-                  }
-                />
-              ))
-            }
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppRoutes />
         </main>
       </div>
 
