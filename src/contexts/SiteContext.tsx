@@ -27,8 +27,10 @@ export interface App {
   id: string;
   name: string;
   description: string;
-  downloadUrl: string;
+  downloadUrl?: string;
   icon: string;
+  appFile?: File;
+  fileName?: string;
 }
 
 export interface PageContent {
@@ -169,7 +171,13 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newApp = { ...app, id: Date.now().toString() };
     const updatedApps = [...apps, newApp];
     setApps(updatedApps);
-    localStorage.setItem('tupac_apps', JSON.stringify(updatedApps));
+    
+    // Store app data without the File object for localStorage
+    const appsForStorage = updatedApps.map(app => {
+      const { appFile, ...appWithoutFile } = app;
+      return appWithoutFile;
+    });
+    localStorage.setItem('tupac_apps', JSON.stringify(appsForStorage));
   };
 
   const updateMenuItem = (id: string, item: Omit<MenuItem, 'id'>) => {
@@ -201,7 +209,13 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
       application.id === id ? { ...app, id } : application
     );
     setApps(updatedApps);
-    localStorage.setItem('tupac_apps', JSON.stringify(updatedApps));
+    
+    // Store app data without the File object for localStorage
+    const appsForStorage = updatedApps.map(app => {
+      const { appFile, ...appWithoutFile } = app;
+      return appWithoutFile;
+    });
+    localStorage.setItem('tupac_apps', JSON.stringify(appsForStorage));
   };
 
   const deleteMenuItem = (id: string) => {
@@ -225,7 +239,13 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const deleteApp = (id: string) => {
     const updatedApps = apps.filter(app => app.id !== id);
     setApps(updatedApps);
-    localStorage.setItem('tupac_apps', JSON.stringify(updatedApps));
+    
+    // Store app data without the File object for localStorage
+    const appsForStorage = updatedApps.map(app => {
+      const { appFile, ...appWithoutFile } = app;
+      return appWithoutFile;
+    });
+    localStorage.setItem('tupac_apps', JSON.stringify(appsForStorage));
   };
 
   const updatePageContent = (pageKey: string, content: Omit<PageContent, 'id' | 'pageKey'>) => {

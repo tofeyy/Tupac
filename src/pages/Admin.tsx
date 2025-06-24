@@ -9,6 +9,7 @@ import { useSite } from '@/contexts/SiteContext';
 import { toast } from '@/hooks/use-toast';
 import { Plus, Trash2, Settings, Pen } from 'lucide-react';
 import ImageUploader from '@/components/ImageUploader';
+import AppFileUploader from '@/components/AppFileUploader';
 import PageContentEditor from '@/components/PageContentEditor';
 
 const Admin = () => {
@@ -55,7 +56,9 @@ const Admin = () => {
     name: '',
     description: '',
     downloadUrl: '',
-    icon: ''
+    icon: '',
+    appFile: undefined as File | undefined,
+    fileName: ''
   });
 
   // Edit states
@@ -88,7 +91,9 @@ const Admin = () => {
     name: '',
     description: '',
     downloadUrl: '',
-    icon: ''
+    icon: '',
+    appFile: undefined as File | undefined,
+    fileName: ''
   });
 
   const handleAddMenuItem = () => {
@@ -146,17 +151,17 @@ const Admin = () => {
   };
 
   const handleAddApp = () => {
-    if (!newApp.name || !newApp.downloadUrl) {
+    if (!newApp.name || (!newApp.downloadUrl && !newApp.appFile)) {
       toast({
         title: "خطأ",
-        description: "الرجاء ملء جميع الحقول المطلوبة",
+        description: "الرجاء ملء جميع الحقول المطلوبة (الاسم + رابط التحميل أو ملف التطبيق)",
         variant: "destructive",
       });
       return;
     }
 
     addApp(newApp);
-    setNewApp({ name: '', description: '', downloadUrl: '', icon: '' });
+    setNewApp({ name: '', description: '', downloadUrl: '', icon: '', appFile: undefined, fileName: '' });
     toast({
       title: "تم بنجاح",
       description: "تم إضافة التطبيق بنجاح",
@@ -251,16 +256,18 @@ const Admin = () => {
     setEditApp({
       name: app.name,
       description: app.description,
-      downloadUrl: app.downloadUrl,
-      icon: app.icon
+      downloadUrl: app.downloadUrl || '',
+      icon: app.icon,
+      appFile: app.appFile,
+      fileName: app.fileName || ''
     });
   };
 
   const handleUpdateApp = () => {
-    if (!editApp.name || !editApp.downloadUrl) {
+    if (!editApp.name || (!editApp.downloadUrl && !editApp.appFile)) {
       toast({
         title: "خطأ",
-        description: "الرجاء ملء جميع الحقول المطلوبة",
+        description: "الرجاء ملء جميع الحقول المطلوبة (الاسم + رابط التحميل أو ملف التطبيق)",
         variant: "destructive",
       });
       return;
@@ -481,7 +488,7 @@ const Admin = () => {
               </div>
 
               <div>
-                <Label htmlFor="downloadUrl">رابط التحميل</Label>
+                <Label htmlFor="downloadUrl">رابط التحميل (اختياري)</Label>
                 <Input
                   id="downloadUrl"
                   value={newApp.downloadUrl}
@@ -489,6 +496,13 @@ const Admin = () => {
                   placeholder="https://example.com/app.apk"
                 />
               </div>
+
+              <AppFileUploader
+                label="أو ارفع ملف التطبيق من جهازك"
+                currentFile={newApp.appFile}
+                fileName={newApp.fileName}
+                onFileSelect={(file, fileName) => setNewApp({ ...newApp, appFile: file || undefined, fileName: fileName || '' })}
+              />
 
               <ImageUploader
                 label="أيقونة التطبيق"
@@ -809,13 +823,20 @@ const Admin = () => {
                             </div>
 
                             <div>
-                              <Label>رابط التحميل</Label>
+                              <Label>رابط التحميل (اختياري)</Label>
                               <Input
                                 value={editApp.downloadUrl}
                                 onChange={(e) => setEditApp({ ...editApp, downloadUrl: e.target.value })}
                                 placeholder="https://example.com/app.apk"
                               />
                             </div>
+
+                            <AppFileUploader
+                              label="أو ارفع ملف التطبيق من جهازك"
+                              currentFile={editApp.appFile}
+                              fileName={editApp.fileName}
+                              onFileSelect={(file, fileName) => setEditApp({ ...editApp, appFile: file || undefined, fileName: fileName || '' })}
+                            />
 
                             <ImageUploader
                               label="أيقونة التطبيق"
@@ -839,7 +860,19 @@ const Admin = () => {
                         </Card>
                       ) : (
                         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <span className="font-medium">{app.name}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="font-medium">{app.name}</span>
+                            {app.appFile && (
+                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                                ملف مرفوع
+                              </span>
+                            )}
+                            {app.downloadUrl && (
+                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                رابط خارجي
+                              </span>
+                            )}
+                          </div>
                           <div className="flex gap-2">
                             <Button
                               size="sm"
