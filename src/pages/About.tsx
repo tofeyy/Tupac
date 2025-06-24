@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, Code, Zap, Heart, Star, Youtube, MessageCircle, Instagram, Github, ExternalLink } from 'lucide-react';
+import { MapPin, Calendar, Code, Zap, Heart, Star, Youtube, MessageCircle, Instagram, ExternalLink } from 'lucide-react';
 
 const About = () => {
   const skills = [
@@ -30,16 +29,16 @@ const About = () => {
       description: 'تعلم البرمجة والتطوير',
       icon: <Youtube className="w-6 h-6" />,
       color: 'bg-red-500',
-      url: '#'
+      url: 'https://youtube.com/@t66td'
     },
     {
-      name: 'توفي للبرمجة',
+      name: 'قناة توفي',
       type: 'تيليجرام',
       subscribers: '8K+',
-      description: 'مشاركة الأكواد والمشاريع',
+      description: 'قناة توفي الرسمية',
       icon: <MessageCircle className="w-6 h-6" />,
       color: 'bg-blue-500',
-      url: '#'
+      url: 'https://t.me/t66td'
     },
     {
       name: 'توفي الشخصي',
@@ -48,16 +47,7 @@ const About = () => {
       description: 'محتوى شخصي وتقني',
       icon: <Instagram className="w-6 h-6" />,
       color: 'bg-gradient-to-r from-purple-500 to-pink-500',
-      url: '#'
-    },
-    {
-      name: 'مشاريع توفي',
-      type: 'جيت هاب',
-      subscribers: '200+',
-      description: 'مشاريع مفتوحة المصدر',
-      icon: <Github className="w-6 h-6" />,
-      color: 'bg-gray-800',
-      url: '#'
+      url: 'https://www.instagram.com/f8__x'
     }
   ];
 
@@ -95,6 +85,17 @@ const About = () => {
               مطور محترف ومنشئ محتوى تقني، متخصص في تطوير التطبيقات وبرمجة البوتات. 
               أشارك خبرتي عبر قنواتي المختلفة وأسعى لتحويل الأفكار إلى حلول تقنية مبتكرة.
             </p>
+            
+            {/* Contact Button */}
+            <div className="mt-8">
+              <Button 
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 text-lg"
+                onClick={() => window.open('https://t.me/qqxqqv', '_blank')}
+              >
+                <MessageCircle className="w-5 h-5 ml-2" />
+                تواصل معي
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -124,7 +125,7 @@ const About = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-3 gap-6">
             {channels.map((channel, index) => (
               <Card key={index} className="group hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border-0 bg-white/95 backdrop-blur-sm overflow-hidden">
                 <CardContent className="p-6">
