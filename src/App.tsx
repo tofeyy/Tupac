@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
@@ -17,6 +16,7 @@ import Admin from "@/pages/Admin";
 import Tutorials from "@/pages/Tutorials";
 import Websites from "@/pages/Websites";
 import Apps from "@/pages/Apps";
+import AppDetail from "@/pages/AppDetail";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -65,6 +65,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/tutorials" element={<Tutorials />} />
       <Route path="/websites" element={<Websites />} />
       <Route path="/apps" element={<Apps />} />
+      <Route path="/app/:appId" element={<AppDetail />} />
       <Route 
         path="/admin" 
         element={
