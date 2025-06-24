@@ -14,7 +14,7 @@ const TikTokDownloader: React.FC = () => {
   const [error, setError] = useState('');
 
   const isValidTikTokUrl = (url: string) => {
-    const tiktokRegex = /^https?:\/\/(www\.)?(vm\.tiktok\.com|tiktok\.com|m\.tiktok\.com)/i;
+    const tiktokRegex = /^https?:\/\/(www\.)?(vm\.tiktok\.com|tiktok\.com|m\.tiktok\.com|vt\.tiktok\.com|lite\.tiktok\.com)/i;
     return tiktokRegex.test(url);
   };
 
