@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface MenuItem {
@@ -40,6 +41,10 @@ interface SiteContextType {
   addTutorial: (tutorial: Omit<Tutorial, 'id'>) => void;
   addWebsite: (website: Omit<Website, 'id'>) => void;
   addApp: (app: Omit<App, 'id'>) => void;
+  updateMenuItem: (id: string, item: Omit<MenuItem, 'id'>) => void;
+  updateTutorial: (id: string, tutorial: Omit<Tutorial, 'id'>) => void;
+  updateWebsite: (id: string, website: Omit<Website, 'id'>) => void;
+  updateApp: (id: string, app: Omit<App, 'id'>) => void;
   deleteMenuItem: (id: string) => void;
   deleteTutorial: (id: string) => void;
   deleteWebsite: (id: string) => void;
@@ -105,6 +110,38 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('tupac_apps', JSON.stringify(updatedApps));
   };
 
+  const updateMenuItem = (id: string, item: Omit<MenuItem, 'id'>) => {
+    const updatedItems = menuItems.map(menuItem => 
+      menuItem.id === id ? { ...item, id } : menuItem
+    );
+    setMenuItems(updatedItems);
+    localStorage.setItem('tupac_menu_items', JSON.stringify(updatedItems));
+  };
+
+  const updateTutorial = (id: string, tutorial: Omit<Tutorial, 'id'>) => {
+    const updatedTutorials = tutorials.map(tut => 
+      tut.id === id ? { ...tutorial, id } : tut
+    );
+    setTutorials(updatedTutorials);
+    localStorage.setItem('tupac_tutorials', JSON.stringify(updatedTutorials));
+  };
+
+  const updateWebsite = (id: string, website: Omit<Website, 'id'>) => {
+    const updatedWebsites = websites.map(site => 
+      site.id === id ? { ...website, id } : site
+    );
+    setWebsites(updatedWebsites);
+    localStorage.setItem('tupac_websites', JSON.stringify(updatedWebsites));
+  };
+
+  const updateApp = (id: string, app: Omit<App, 'id'>) => {
+    const updatedApps = apps.map(application => 
+      application.id === id ? { ...app, id } : application
+    );
+    setApps(updatedApps);
+    localStorage.setItem('tupac_apps', JSON.stringify(updatedApps));
+  };
+
   const deleteMenuItem = (id: string) => {
     const updatedItems = menuItems.filter(item => item.id !== id);
     setMenuItems(updatedItems);
@@ -138,6 +175,10 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     addTutorial,
     addWebsite,
     addApp,
+    updateMenuItem,
+    updateTutorial,
+    updateWebsite,
+    updateApp,
     deleteMenuItem,
     deleteTutorial,
     deleteWebsite,
