@@ -1,19 +1,59 @@
 
 import React from 'react';
 import TikTokDownloader from '@/components/TikTokDownloader';
+import { useSite } from '@/contexts/SiteContext';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
+  const { getPageContent } = useSite();
+  const pageContent = getPageContent('home');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="text-center mb-8 animate-fade-in">
+          {pageContent?.image && (
+            <div className="mb-6">
+              <img
+                src={pageContent.image}
+                alt={pageContent.title}
+                className="w-32 h-32 mx-auto rounded-full shadow-lg object-cover"
+              />
+            </div>
+          )}
+          
           <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-4">
-            أداة تحميل فيديوهات تيك توك
+            {pageContent?.title || 'أداة تحميل فيديوهات تيك توك'}
           </h1>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-            قم بتحميل فيديوهات تيك توك المفضلة لديك بجودة عالية وبشكل مجاني
+            {pageContent?.subtitle || 'قم بتحميل فيديوهات تيك توك المفضلة لديك بجودة عالية وبشكل مجاني'}
           </p>
+          
+          {pageContent?.description && (
+            <p className="text-md text-gray-600 max-w-xl mx-auto mt-4">
+              {pageContent.description}
+            </p>
+          )}
+
+          {pageContent?.content && (
+            <div className="mt-6 p-4 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+              <p className="text-gray-700 whitespace-pre-wrap">
+                {pageContent.content}
+              </p>
+            </div>
+          )}
+
+          {pageContent?.ctaText && pageContent?.ctaUrl && (
+            <div className="mt-6">
+              <Button
+                onClick={() => window.open(pageContent.ctaUrl, '_blank')}
+                className="gradient-bg text-white hover:opacity-90"
+              >
+                {pageContent.ctaText}
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* TikTok Downloader Section */}

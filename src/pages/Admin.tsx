@@ -9,6 +9,7 @@ import { useSite } from '@/contexts/SiteContext';
 import { toast } from '@/hooks/use-toast';
 import { Plus, Trash2, Settings, Pen } from 'lucide-react';
 import ImageUploader from '@/components/ImageUploader';
+import PageContentEditor from '@/components/PageContentEditor';
 
 const Admin = () => {
   const { 
@@ -282,6 +283,11 @@ const Admin = () => {
             لوحة التحكم
           </h1>
           <p className="text-gray-600">إدارة محتوى الموقع وإضافة ميزات جديدة</p>
+        </div>
+
+        {/* Page Content Editor - New Section */}
+        <div className="mb-8">
+          <PageContentEditor />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">

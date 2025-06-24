@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface MenuItem {
@@ -32,11 +31,24 @@ export interface App {
   icon: string;
 }
 
+export interface PageContent {
+  id: string;
+  pageKey: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  image?: string;
+  content?: string;
+  ctaText?: string;
+  ctaUrl?: string;
+}
+
 interface SiteContextType {
   menuItems: MenuItem[];
   tutorials: Tutorial[];
   websites: Website[];
   apps: App[];
+  pageContents: PageContent[];
   addMenuItem: (item: Omit<MenuItem, 'id'>) => void;
   addTutorial: (tutorial: Omit<Tutorial, 'id'>) => void;
   addWebsite: (website: Omit<Website, 'id'>) => void;
@@ -49,6 +61,8 @@ interface SiteContextType {
   deleteTutorial: (id: string) => void;
   deleteWebsite: (id: string) => void;
   deleteApp: (id: string) => void;
+  updatePageContent: (pageKey: string, content: Omit<PageContent, 'id' | 'pageKey'>) => void;
+  getPageContent: (pageKey: string) => PageContent | undefined;
 }
 
 const SiteContext = createContext<SiteContextType | undefined>(undefined);
@@ -69,17 +83,35 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [websites, setWebsites] = useState<Website[]>([]);
   const [apps, setApps] = useState<App[]>([]);
+  const [pageContents, setPageContents] = useState<PageContent[]>([
+    {
+      id: '1',
+      pageKey: 'home',
+      title: 'أداة تحميل فيديوهات تيك توك',
+      subtitle: 'قم بتحميل فيديوهات تيك توك المفضلة لديك بجودة عالية وبشكل مجاني',
+      description: 'أسرع وأسهل طريقة لتحميل فيديوهات تيك توك'
+    },
+    {
+      id: '2',
+      pageKey: 'about',
+      title: 'حول توفي العامري',
+      subtitle: 'مطور ومبرمج شغوف بالتكنولوجيا',
+      description: 'أعمل على تطوير حلول تقنية مبتكرة ومفيدة للمجتمع العربي'
+    }
+  ]);
 
   useEffect(() => {
     const savedMenuItems = localStorage.getItem('tupac_menu_items');
     const savedTutorials = localStorage.getItem('tupac_tutorials');
     const savedWebsites = localStorage.getItem('tupac_websites');
     const savedApps = localStorage.getItem('tupac_apps');
+    const savedPageContents = localStorage.getItem('tupac_page_contents');
 
     if (savedMenuItems) setMenuItems(JSON.parse(savedMenuItems));
     if (savedTutorials) setTutorials(JSON.parse(savedTutorials));
     if (savedWebsites) setWebsites(JSON.parse(savedWebsites));
     if (savedApps) setApps(JSON.parse(savedApps));
+    if (savedPageContents) setPageContents(JSON.parse(savedPageContents));
   }, []);
 
   const addMenuItem = (item: Omit<MenuItem, 'id'>) => {
@@ -166,11 +198,24 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('tupac_apps', JSON.stringify(updatedApps));
   };
 
+  const updatePageContent = (pageKey: string, content: Omit<PageContent, 'id' | 'pageKey'>) => {
+    const updatedContents = pageContents.map(page => 
+      page.pageKey === pageKey ? { ...content, id: page.id, pageKey } : page
+    );
+    setPageContents(updatedContents);
+    localStorage.setItem('tupac_page_contents', JSON.stringify(updatedContents));
+  };
+
+  const getPageContent = (pageKey: string) => {
+    return pageContents.find(page => page.pageKey === pageKey);
+  };
+
   const value = {
     menuItems,
     tutorials,
     websites,
     apps,
+    pageContents,
     addMenuItem,
     addTutorial,
     addWebsite,
@@ -183,6 +228,8 @@ export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children
     deleteTutorial,
     deleteWebsite,
     deleteApp,
+    updatePageContent,
+    getPageContent,
   };
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>;

@@ -6,7 +6,8 @@ import { useSite } from '@/contexts/SiteContext';
 import { Download, Smartphone } from 'lucide-react';
 
 const Apps = () => {
-  const { apps } = useSite();
+  const { apps, getPageContent } = useSite();
+  const pageContent = getPageContent('apps');
 
   if (apps.length === 0) {
     return (
@@ -23,8 +24,47 @@ const Apps = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-4">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold gradient-text mb-4">متجر التطبيقات</h1>
-          <p className="text-gray-600">تطبيقات وأدوات مفيدة من تطوير توفي العامري</p>
+          {pageContent?.image && (
+            <div className="mb-6">
+              <img
+                src={pageContent.image}
+                alt={pageContent.title}
+                className="w-24 h-24 mx-auto rounded-full shadow-lg object-cover"
+              />
+            </div>
+          )}
+          
+          <h1 className="text-3xl font-bold gradient-text mb-4">
+            {pageContent?.title || 'متجر التطبيقات'}
+          </h1>
+          <p className="text-gray-600">
+            {pageContent?.subtitle || 'تطبيقات وأدوات مفيدة من تطوير توفي العامري'}
+          </p>
+          
+          {pageContent?.description && (
+            <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
+              {pageContent.description}
+            </p>
+          )}
+
+          {pageContent?.content && (
+            <div className="mt-6 p-4 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+              <p className="text-gray-700 whitespace-pre-wrap">
+                {pageContent.content}
+              </p>
+            </div>
+          )}
+
+          {pageContent?.ctaText && pageContent?.ctaUrl && (
+            <div className="mt-6">
+              <Button
+                onClick={() => window.open(pageContent.ctaUrl, '_blank')}
+                className="gradient-bg text-white hover:opacity-90"
+              >
+                {pageContent.ctaText}
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
