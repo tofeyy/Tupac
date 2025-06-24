@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface MenuItem {
@@ -59,7 +58,8 @@ export const useSite = () => {
 
 export const SiteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([
-    { id: '1', name: 'تحميل من تيك توك', type: 'tiktok', apiUrl: 'https://tofey.serv00.net/tiktok?url=' }
+    { id: '1', name: 'تحميل من تيك توك', type: 'tiktok', apiUrl: 'https://tofey.serv00.net/tiktok?url=' },
+    { id: '2', name: 'حولي', type: 'tutorials' }
   ]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [websites, setWebsites] = useState<Website[]>([]);

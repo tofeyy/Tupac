@@ -38,6 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, onLogin, onNavigate,
 
   const getPath = (item: any) => {
     if (item.type === 'tiktok') return '/';
+    if (item.name === 'حولي') return '/about';
     if (item.type === 'tutorials') return '/tutorials';
     if (item.type === 'websites') return '/websites';
     if (item.type === 'apps') return '/apps';

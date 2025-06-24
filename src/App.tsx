@@ -89,6 +89,7 @@ const AppContent: React.FC = () => {
         <main className="flex-1 min-h-screen">
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/websites" element={<Websites />} />
             <Route path="/apps" element={<Apps />} />
