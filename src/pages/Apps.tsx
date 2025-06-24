@@ -4,22 +4,30 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSite } from '@/contexts/SiteContext';
-import { Download, Smartphone, Star, Users, Search, Grid } from 'lucide-react';
+import { Smartphone, Search, Star, Download, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Apps = () => {
-  const { apps, getPageContent } = useSite();
-  const pageContent = getPageContent('apps');
+  const { apps } = useSite();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedApp, setSelectedApp] = useState(null);
 
   const filteredApps = apps.filter(app =>
     app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (app.description && app.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleAppClick = (appId: string, appName: string) => {
+  const handleAppClick = (app) => {
+    setSelectedApp(app);
+  };
+
+  const handleDownloadClick = (appId, appName) => {
     navigate(`/app/${appId}`, { state: { appName } });
+  };
+
+  const handleBackToApps = () => {
+    setSelectedApp(null);
   };
 
   if (apps.length === 0) {
@@ -36,20 +44,105 @@ const Apps = () => {
     );
   }
 
+  // Show app details view
+  if (selectedApp) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-6">
+        <div className="container mx-auto max-w-2xl">
+          {/* Back Button */}
+          <Button
+            onClick={handleBackToApps}
+            variant="ghost"
+            className="text-white/80 hover:text-white mb-8 hover:bg-white/10"
+          >
+            <ArrowRight className="w-4 h-4 mr-2" />
+            العودة للتطبيقات
+          </Button>
+
+          {/* App Details Card */}
+          <Card className="bg-white/10 backdrop-blur-md border-white/20 overflow-hidden">
+            <CardContent className="p-0">
+              {/* App Header */}
+              <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 p-8 text-center">
+                {selectedApp.icon ? (
+                  <img
+                    src={selectedApp.icon}
+                    alt={selectedApp.name}
+                    className="w-32 h-32 mx-auto rounded-3xl shadow-2xl mb-6"
+                  />
+                ) : (
+                  <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center mx-auto shadow-2xl mb-6">
+                    <Smartphone className="w-16 h-16 text-white" />
+                  </div>
+                )}
+                <h1 className="text-4xl font-bold text-white mb-2">{selectedApp.name}</h1>
+                <div className="flex items-center justify-center gap-4 text-sm">
+                  <div className="flex items-center gap-1 text-yellow-400">
+                    <Star className="w-4 h-4 fill-current" />
+                    <span>4.8</span>
+                  </div>
+                  <span className="text-green-400 font-semibold">مجاني</span>
+                </div>
+              </div>
+
+              {/* App Info */}
+              <div className="p-8">
+                {selectedApp.description && (
+                  <div className="mb-8">
+                    <h3 className="text-xl font-bold text-white mb-4">الوصف</h3>
+                    <p className="text-white/80 leading-relaxed text-lg">
+                      {selectedApp.description}
+                    </p>
+                  </div>
+                )}
+
+                {/* Download Button */}
+                <Button
+                  onClick={() => handleDownloadClick(selectedApp.id, selectedApp.name)}
+                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white py-6 text-xl font-bold rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300"
+                >
+                  <Download className="w-6 h-6 mr-3" />
+                  تحميل التطبيق
+                </Button>
+
+                {/* Additional Info */}
+                <div className="mt-6 grid grid-cols-3 gap-4 text-center">
+                  <div className="bg-white/5 rounded-xl p-4">
+                    <div className="text-2xl font-bold text-white">50K+</div>
+                    <div className="text-white/60 text-sm">تحميل</div>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-4">
+                    <div className="text-2xl font-bold text-white">4.8</div>
+                    <div className="text-white/60 text-sm">تقييم</div>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-4">
+                    <div className="text-2xl font-bold text-white">مجاني</div>
+                    <div className="text-white/60 text-sm">السعر</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Main apps grid view
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
-      <div className="container mx-auto max-w-7xl p-6">
-        {/* Header Section */}
+      <div className="container mx-auto max-w-6xl p-6">
+        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-6xl font-bold text-white mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            📱 متجر التطبيقات
+          <h1 className="text-5xl font-bold text-white mb-6">
+            متجر التطبيقات
           </h1>
-          <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
-            اكتشف مجموعة رائعة من التطبيقات المفيدة والمميزة
+          <p className="text-xl text-white/70 mb-8">
+            اكتشف وحمل أفضل التطبيقات
           </p>
 
-          {/* Search Section */}
-          <div className="max-w-md mx-auto mb-8">
+          {/* Search */}
+          <div className="max-w-md mx-auto">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
               <Input
@@ -60,12 +153,6 @@ const Apps = () => {
                 className="w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-md border-white/30 text-white placeholder:text-white/60 rounded-2xl text-lg focus:bg-white/20 transition-all"
               />
             </div>
-          </div>
-
-          {/* Apps Count */}
-          <div className="flex items-center justify-center gap-2 text-white/70 mb-8">
-            <Grid className="w-5 h-5" />
-            <span>{filteredApps.length} تطبيق متاح</span>
           </div>
         </div>
 
@@ -79,84 +166,33 @@ const Apps = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredApps.map((app, index) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+            {filteredApps.map((app) => (
               <Card 
                 key={app.id} 
-                className="group bg-white/10 backdrop-blur-md border-white/20 hover:border-white/40 transition-all duration-500 hover:scale-105 hover:shadow-2xl cursor-pointer overflow-hidden rounded-3xl"
-                style={{
-                  animationDelay: `${index * 0.1}s`
-                }}
-                onClick={() => handleAppClick(app.id, app.name)}
+                className="group bg-white/10 backdrop-blur-md border-white/20 hover:border-white/40 transition-all duration-300 hover:scale-105 cursor-pointer overflow-hidden rounded-3xl"
+                onClick={() => handleAppClick(app)}
               >
-                <CardContent className="p-0">
-                  {/* App Icon Section */}
-                  <div className="bg-gradient-to-br from-white/20 to-white/5 p-8 text-center relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20 group-hover:from-blue-400/30 group-hover:to-purple-400/30 transition-all duration-500"></div>
-                    
-                    {app.icon ? (
-                      <img
-                        src={app.icon}
-                        alt={app.name}
-                        className="w-24 h-24 mx-auto rounded-3xl shadow-2xl transform group-hover:scale-110 transition-transform duration-500 relative z-10 object-cover"
-                      />
-                    ) : (
-                      <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center mx-auto shadow-2xl transform group-hover:scale-110 transition-transform duration-500 relative z-10">
-                        <Smartphone className="w-12 h-12 text-white" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* App Info */}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-blue-300 transition-colors duration-300 text-center">
-                      {app.name}
-                    </h3>
-                    
-                    {app.description && (
-                      <p className="text-white/70 mb-6 text-sm leading-relaxed text-center line-clamp-2 min-h-[40px]">
-                        {app.description}
-                      </p>
-                    )}
-
-                    {/* App Stats */}
-                    <div className="flex items-center justify-between mb-6 text-sm bg-white/5 rounded-xl p-3">
-                      <div className="flex items-center gap-1 text-yellow-400">
-                        <Star className="w-4 h-4 fill-current" />
-                        <span>4.9</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-white/60">
-                        <Users className="w-4 h-4" />
-                        <span>50K+</span>
-                      </div>
-                      <div className="text-green-400 font-semibold">
-                        مجاني
-                      </div>
+                <CardContent className="p-6 text-center">
+                  {app.icon ? (
+                    <img
+                      src={app.icon}
+                      alt={app.name}
+                      className="w-20 h-20 mx-auto rounded-2xl shadow-lg mb-4 object-cover"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
+                      <Smartphone className="w-10 h-10 text-white" />
                     </div>
-                    
-                    <Button
-                      className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-2xl shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 py-3 text-lg font-semibold"
-                    >
-                      <Download className="w-5 h-5" />
-                      تحميل مجاني
-                    </Button>
-                  </div>
+                  )}
+                  <h3 className="text-white font-semibold text-sm leading-tight line-clamp-2">
+                    {app.name}
+                  </h3>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
-
-        {/* Bottom Section */}
-        <div className="text-center mt-20">
-          <div className="bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 p-8 max-w-2xl mx-auto">
-            <h3 className="text-3xl font-bold text-white mb-4">تطبيقات مخصصة</h3>
-            <p className="text-white/70 mb-6 text-lg">هل تحتاج تطبيق مخصص لعملك؟ نحن هنا لمساعدتك</p>
-            <Button className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold">
-              تواصل معنا الآن
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );
