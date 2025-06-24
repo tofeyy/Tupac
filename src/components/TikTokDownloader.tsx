@@ -44,52 +44,32 @@ const TikTokDownloader: React.FC = () => {
     try {
       console.log('جاري جلب الفيديو من:', url);
       
-      // جرب عدة APIs للتأكد من نجاح التحميل
-      const apis = [
-        `https://tofey.serv00.net/tiktok?url=${encodeURIComponent(url)}`,
-        `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`,
-        `https://tikmate.app/download?url=${encodeURIComponent(url)}`
-      ];
-
-      let success = false;
+      // استخدم الـ API المحدد
+      const apiUrl = `https://tofey.serv00.net/tiktok?url=${encodeURIComponent(url)}`;
+      console.log('جاري تجربة API:', apiUrl);
       
-      for (const apiUrl of apis) {
-        try {
-          console.log('جاري تجربة API:', apiUrl);
-          const response = await fetch(apiUrl);
-          
-          if (!response.ok) {
-            console.log('فشل API:', apiUrl, response.status);
-            continue;
-          }
-
-          const data = await response.json();
-          console.log('استجابة API:', data);
-
-          // تحقق من وجود رابط الفيديو في الاستجابة
-          const videoUrl = data.video || data.play || data.videoUrl || data.download_url;
-          
-          if (videoUrl) {
-            setVideoData({
-              video: videoUrl,
-              title: data.title || data.desc || '',
-              thumbnail: data.thumbnail || data.cover || ''
-            });
-            success = true;
-            toast({
-              title: "تم بنجاح",
-              description: "تم جلب الفيديو بنجاح",
-            });
-            break;
-          }
-        } catch (apiError) {
-          console.error('خطأ في API:', apiUrl, apiError);
-          continue;
-        }
+      const response = await fetch(apiUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      if (!success) {
-        throw new Error('فشل في جلب الفيديو من جميع الخوادم');
+      const data = await response.json();
+      console.log('استجابة API:', data);
+
+      // تحقق من وجود رابط الفيديو في الاستجابة
+      if (data.video) {
+        setVideoData({
+          video: data.video,
+          title: data.title || '',
+          thumbnail: data.thumbnail || ''
+        });
+        toast({
+          title: "تم بنجاح",
+          description: "تم جلب الفيديو بنجاح",
+        });
+      } else {
+        throw new Error('لم يتم العثور على رابط الفيديو في الاستجابة');
       }
 
     } catch (error) {
@@ -112,40 +92,20 @@ const TikTokDownloader: React.FC = () => {
     try {
       console.log('جاري تحميل الفيديو من:', videoData.video);
       
-      // استخدم طريقة أكثر موثوقية للتحميل
-      const proxyUrl = `https://cors-anywhere.herokuapp.com/${videoData.video}`;
+      // إنشاء رابط تحميل مباشر
+      const link = document.createElement('a');
+      link.href = videoData.video;
+      link.download = `tiktok-video-${Date.now()}.mp4`;
+      link.target = '_blank';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       
-      try {
-        const response = await fetch(videoData.video, { mode: 'no-cors' });
-        const blob = await response.blob();
-        
-        if (blob.size > 0) {
-          const downloadUrl = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = downloadUrl;
-          link.download = `tiktok-video-${Date.now()}.mp4`;
-          link.style.display = 'none';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(downloadUrl);
-          
-          toast({
-            title: "تم التحميل",
-            description: "تم تحميل الفيديو بنجاح",
-          });
-        } else {
-          throw new Error('ملف فارغ');
-        }
-      } catch (fetchError) {
-        // إذا فشل التحميل المباشر، افتح الرابط في تبويب جديد
-        console.log('فشل التحميل المباشر، فتح الرابط في تبويب جديد');
-        window.open(videoData.video, '_blank');
-        toast({
-          title: "إعادة توجيه",
-          description: "تم فتح رابط التحميل في تبويب جديد",
-        });
-      }
+      toast({
+        title: "تم التحميل",
+        description: "تم بدء تحميل الفيديو",
+      });
       
     } catch (error) {
       console.error('خطأ في التحميل:', error);
@@ -216,7 +176,7 @@ const TikTokDownloader: React.FC = () => {
             <div className="text-xs text-gray-500 space-y-1 bg-gray-50 p-3 rounded-lg">
               <p><strong>نصائح:</strong></p>
               <p>• تأكد من أن الرابط يبدأ بـ https://</p>
-              <p>• يمكن استخدام الروابط المختصرة (vm.tiktok.com)</p>
+              <p>• يمكن استخدام الروابط المختصرة (vm.tiktok.com, vt.tiktok.com)</p>
               <p>• تأكد من أن الفيديو متاح للعامة</p>
             </div>
           </div>
@@ -228,7 +188,7 @@ const TikTokDownloader: React.FC = () => {
           <CardContent className="p-6">
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-green-800 text-center">
-                الفيديو جاهز للتحميل
+                الفيديو جاهز للمشاهدة والتحميل
               </h3>
 
               {videoData.title && (
@@ -237,7 +197,7 @@ const TikTokDownloader: React.FC = () => {
                 </p>
               )}
               
-              <div className="flex justify-center">
+              <div className="flex justify-center relative">
                 <video
                   controls
                   className="max-w-full max-h-96 rounded-lg shadow-lg"
@@ -246,11 +206,26 @@ const TikTokDownloader: React.FC = () => {
                   preload="metadata"
                   onError={(e) => {
                     console.error('خطأ في تحميل الفيديو:', e);
-                    setError('فشل في تحميل الفيديو للمعاينة، لكن يمكن تحميله');
                   }}
                 >
                   متصفحك لا يدعم تشغيل الفيديو
                 </video>
+                
+                {/* زر التحميل داخل منطقة الفيديو */}
+                <div className="absolute bottom-4 right-4">
+                  <Button
+                    onClick={handleDownload}
+                    disabled={processing}
+                    size="sm"
+                    className="bg-black/70 hover:bg-black/90 text-white backdrop-blur-sm"
+                  >
+                    {processing ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
               
               <Button
@@ -272,7 +247,7 @@ const TikTokDownloader: React.FC = () => {
               </Button>
               
               <p className="text-xs text-gray-500 text-center">
-                إذا لم يعمل التحميل التلقائي، سيتم فتح رابط التحميل في تبويب جديد
+                اضغط على زر التحميل لحفظ الفيديو على جهازك
               </p>
             </div>
           </CardContent>
