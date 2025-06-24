@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -164,6 +163,7 @@ const Admin = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="tiktok">تحميل من تيك توك</SelectItem>
                     <SelectItem value="instagram">تحميل من انستغرام</SelectItem>
                     <SelectItem value="twitter">تحميل من تويتر</SelectItem>
                     <SelectItem value="pinterest">تحميل من بنترست</SelectItem>
@@ -174,7 +174,7 @@ const Admin = () => {
                 </Select>
               </div>
 
-              {(newMenuItem.type === 'instagram' || newMenuItem.type === 'twitter' || newMenuItem.type === 'pinterest') && (
+              {(newMenuItem.type === 'tiktok' || newMenuItem.type === 'instagram' || newMenuItem.type === 'twitter' || newMenuItem.type === 'pinterest') && (
                 <div>
                   <Label htmlFor="apiUrl">رابط API</Label>
                   <Input
