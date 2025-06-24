@@ -59,7 +59,8 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      <Route path="/" element={<About />} />
+      <Route path="/tiktok" element={<Index />} />
       <Route path="/about" element={<About />} />
       <Route path="/tutorials" element={<Tutorials />} />
       <Route path="/websites" element={<Websites />} />
